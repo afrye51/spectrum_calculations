@@ -1,45 +1,30 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+max_data_mcs11 = 67.5
+max_data_mcs7 = 40.5
 
-class message_simulation():
-    def __init__(self, num_intersections, num_cars):
-        self.num_intersections = num_intersections
-        self.num_cars = num_cars
-        self.bw = 0
-        self.tcr_b = 10
-        self.tcr_hz = 10
-        self.map_b = 10
-        self.map_hz = 10
+tcr_Bps = 29
+tcm_Bps = 42
+spat_Bps = 3400
+map_Bps = 700
+bsm_Bps = 3400
+psm_Bps = 2700
+mom_Bps = 2700
+mpat_Bps = 5700
+mreq_Bps = 3200
+mresp_Bps = 1500
 
-    def simulate(self):
-        print('creating results')
-
-    def add_intersection(self):
-        self.bw += self.map_b * self.map_hz
-
-    def plot_results(self):
-        xpoints = np.array([0, 6])
-        ypoints = np.array([0, 250])
-
-        plt.title("message bandwidth vs vehicle headway")
-        plt.xlabel("Bandwidth (MB/s)")
-        plt.ylabel("Vehicle Headway (seconds)")
-        plt.plot(xpoints, ypoints)
-        plt.show()
-
-max_data_mBps = 67.5
-
-tcr_Bps = 4
-tcm_Bps = 17
-spat_Bps = 2700
-map_Bps = 450
-bsm_Bps = 2700
-psm_Bps = 2000
-mom_Bps = 2000
-mpat_Bps = 5000
-mreq_Bps = 2500
-mresp_Bps = 800
+tcr_Bps_max = 78
+tcm_Bps_max = 110
+spat_Bps_max = 14000
+map_Bps_max = 1400
+bsm_Bps_max = 14000
+psm_Bps_max = 14000
+mom_Bps_max = 10500
+mpat_Bps_max = 8500
+mreq_Bps_max = 11520
+mresp_Bps_max = 10020
 
 
 def sdsm_Bps(num_objects):
@@ -62,7 +47,9 @@ def vehicles_per_m(speed, headway, vehicle_len=8):
     return vehicles_per_m_platooning(speed, headway, headway, platoon_size=1, vehicle_len=vehicle_len)
 
 
-def simulation_platooning(speed, inter_platoon_headway, intra_platoon_headway, num_lanes, radio_range, platoon_size=10):
+def simulation_platooning(speed, inter_platoon_headway, intra_platoon_headway, num_lanes, radio_range, platoon_size=10,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
     veh_per_m = vehicles_per_m_platooning(speed, inter_platoon_headway, intra_platoon_headway)
     Bps_per_leader = bsm_Bps + mpat_Bps + mom_Bps + tcr_Bps
     Bps_per_follower = bsm_Bps + mpat_Bps + mom_Bps + tcr_Bps
@@ -72,7 +59,9 @@ def simulation_platooning(speed, inter_platoon_headway, intra_platoon_headway, n
     return total_Bps
 
 
-def simulation_workzone(speed, headway, num_lanes, radio_range):
+def simulation_workzone(speed, headway, num_lanes, radio_range,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
     veh_per_m = vehicles_per_m(speed, headway)
     Bps_per_veh = bsm_Bps + mpat_Bps + tcr_Bps + tcm_Bps
     num_vehicles = veh_per_m * num_lanes * radio_range * 2
@@ -81,7 +70,9 @@ def simulation_workzone(speed, headway, num_lanes, radio_range):
 
 
 def simulation_intersections(speed, headway, num_lanes, radio_range, intersection_spacing, stopped_fill_prop=0.5, 
-                             road_width=12, vehicle_len=8, cp=False, num_ped=0):
+                             road_width=12, vehicle_len=8, cp=False, num_ped=0,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
     vehicles_per_m_driving = vehicles_per_m(speed, headway)
     vehicles_per_m_stopped = ((intersection_spacing - road_width) * stopped_fill_prop / vehicle_len) / intersection_spacing
     
@@ -135,7 +126,9 @@ def simulation_intersections(speed, headway, num_lanes, radio_range, intersectio
     return total_Bps
     
     
-def simulation_cp(speed, headway, num_lanes, radio_range, vehicle_len=8):
+def simulation_cp(speed, headway, num_lanes, radio_range, vehicle_len=8,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
     # convert it to one single direction 2x long to make the math easier
     road_length = 4 * radio_range
     num_lanes = num_lanes / 2
@@ -156,42 +149,22 @@ def simulation_cp(speed, headway, num_lanes, radio_range, vehicle_len=8):
 
 
 def simulation_combined(speed, headway, num_lanes, radio_range, intersection_spacing, stopped_fill_prop=0.5,
-                             road_width=12, vehicle_len=8, num_ped=15):
+                             road_width=12, vehicle_len=8, num_ped=15,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
     total_Bps = simulation_intersections(speed, headway, num_lanes, radio_range, intersection_spacing,
                                    stopped_fill_prop=stopped_fill_prop, road_width=road_width,
-                                   vehicle_len=vehicle_len, cp=True, num_ped=num_ped)
+                                   vehicle_len=vehicle_len, cp=True, num_ped=num_ped,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps)
     return total_Bps
-    
-
-# Assuming stopped vehicles in a traffic jam, compute the number of vehicles within a certain radius
-#   num_lanes: total number of lanes on the road
-#   radius: radius in km to count cars in (radius of cv messages)
-#   spacing: time headway between vehicles in meters
-#   offset: distance in km from the road to the center of the circle (making the road a chord)
-#   vehicle_len: length in meters of each vehicle
-def compute_num_cars_traffic_jam(num_lanes, radius, spacing, offset=0, vehicle_len=8):
-    clearance = spacing + vehicle_len
-    density_per_km = 1000 / clearance
-    road_length_in_radius = 2 * np.sqrt(radius**2 + offset**2)
-    return num_lanes * (density_per_km * road_length_in_radius)
 
 
-# Assuming free traffic flow, compute the number of vehicles within a certain radius
-#   num_lanes: total number of lanes on the road
-#   radius: radius in km to count cars in (radius of cv messages)
-#   speed: speed of vehicles in m/s
-#   headway: time headway between vehicles in seconds
-#   offset: distance in km from the road to the center of the circle (making the road a chord)
-#   vehicle_len: length in meters of each vehicle
-def compute_num_cars_free_flow(num_lanes, radius, speed, headway, offset=0, vehicle_len=8):
-    clearance = headway * speed + vehicle_len
-    density_per_km = 1000 / clearance
-    road_length_in_radius = 2 * np.sqrt(radius**2 + offset**2)
-    return num_lanes * (density_per_km * road_length_in_radius)
-
-
-def plot_speed_data(speeds, throughputs, title, ylabel='Throughput (MB/s)', xlabel='Vehicle Speed (mph)'):
-    print('hi')
+def plot_scenario(x, y, y_max):
+    plt.plot(x, y, color='k', linestyle='solid', label='Typical Throughput')
+    plt.plot(x, y_max, color='k', linestyle='dashed', label='Maximum Throughput')
+    plt.plot(x, [max_data_mcs11]*len(y), color='grey', linestyle='dashdot', label='MCS11 Maximum')
+    plt.plot(x, [max_data_mcs7]*len(y), color='grey', linestyle='dotted', label='MCS7 Maximum')
 
 
 def main():
@@ -204,65 +177,87 @@ def main():
 
     city_speed = 30
     city_num_lanes = num_lanes // 2
-    city_radio_range_fixed = 600
-    city_radio_range_range = [800, 600, 400, 200]
+    city_radio_range = 600
     intersection_spacing_range = [150, 200, 300, 500, 800, 1200]
+
+    messages_normal = {'tcr_Bps': tcr_Bps, 'tcm_Bps': tcm_Bps, 'spat_Bps': spat_Bps, 'map_Bps': map_Bps, 'bsm_Bps': bsm_Bps, 'psm_Bps': psm_Bps, 'mom_Bps': mom_Bps, 'mpat_Bps': mpat_Bps, 'mreq_Bps': mreq_Bps, 'mresp_Bps': mresp_Bps}
+    messages_max = {'tcr_Bps': tcr_Bps_max, 'tcm_Bps': tcm_Bps_max, 'spat_Bps': spat_Bps_max, 'map_Bps': map_Bps_max, 'bsm_Bps': bsm_Bps_max, 'psm_Bps': psm_Bps_max, 'mom_Bps': mom_Bps_max, 'mpat_Bps': mpat_Bps_max, 'mreq_Bps': mreq_Bps_max, 'mresp_Bps': mresp_Bps_max}
 
     speed_range = [10, 20, 30, 40, 50, 60]
     sim1_MBps = []
+    sim1_MBps_max = []
     sim2_MBps = []
+    sim2_MBps_max = []
     sim3_MBps = []
+    sim3_MBps_max = []
     sim4_MBps = []
+    sim4_MBps_max = []
     sim5_MBps = []
+    sim5_MBps_max = []
 
     for speed in speed_range:
-        sim1_MBps.append(simulation_platooning(speed * mph_to_mps, headway, headway_intra_platoon, num_lanes, radio_range) / 1000000)
-        sim2_MBps.append(simulation_workzone(speed * mph_to_mps, headway, num_lanes - 2, radio_range) / 1000000)
-        sim4_MBps.append(simulation_cp(speed * mph_to_mps, headway, num_lanes, radio_range) / 1000000)
+        sim1_MBps.append(simulation_platooning(speed * mph_to_mps, headway, headway_intra_platoon, num_lanes, radio_range, **messages_normal) / 1000000)
+        sim1_MBps_max.append(simulation_platooning(speed * mph_to_mps, headway, headway_intra_platoon, num_lanes, radio_range, **messages_max) / 1000000)
+        sim2_MBps.append(simulation_workzone(speed * mph_to_mps, headway, num_lanes - 2, radio_range, **messages_normal) / 1000000)
+        sim2_MBps_max.append(simulation_workzone(speed * mph_to_mps, headway, num_lanes - 2, radio_range, **messages_max) / 1000000)
+        sim4_MBps.append(simulation_cp(speed * mph_to_mps, headway, num_lanes, radio_range, **messages_normal) / 1000000)
+        sim4_MBps_max.append(simulation_cp(speed * mph_to_mps, headway, num_lanes, radio_range, **messages_max) / 1000000)
 
     for intersection_spacing in intersection_spacing_range:
-        sim_args_city = [city_speed * mph_to_mps, headway, city_num_lanes, city_radio_range_fixed, intersection_spacing]
-        sim3_MBps.append(simulation_combined(*sim_args_city) / 1000000)
-
-    for city_radio_range in city_radio_range_range:
-        sim5_tmp_MBps = []
-        for intersection_spacing in intersection_spacing_range:
-            sim_args_city = [city_speed * mph_to_mps, headway, city_num_lanes, city_radio_range, intersection_spacing]
-            sim5_tmp_MBps.append(simulation_combined(*sim_args_city) / 1000000)
-        sim5_MBps.append(sim5_tmp_MBps)
+        sim_args_city = [city_speed * mph_to_mps, headway, city_num_lanes, city_radio_range, intersection_spacing]
+        sim3_MBps.append(simulation_intersections(*sim_args_city, **messages_normal) / 1000000)
+        sim3_MBps_max.append(simulation_intersections(*sim_args_city, **messages_max) / 1000000)
+        sim5_MBps.append(simulation_combined(*sim_args_city, **messages_normal) / 1000000)
+        sim5_MBps_max.append(simulation_combined(*sim_args_city, **messages_max) / 1000000)
 
     plt.title("Platooning Message Throughput")
     plt.ylabel("Throughput (MB/s)")
     plt.xlabel("Vehicle Speed (mph)")
-    plt.plot(speed_range, sim1_MBps)
+    plot_scenario(speed_range, sim1_MBps, sim1_MBps_max)
+    plt.legend()
+    plt.savefig('spectrum_platooning.png')
     plt.show()
 
     plt.title("Workzone Message Throughput")
     plt.ylabel("Throughput (MB/s)")
     plt.xlabel("Vehicle Speed (mph)")
-    plt.plot(speed_range, sim2_MBps)
+    plot_scenario(speed_range, sim2_MBps, sim2_MBps_max)
+    plt.legend()
+    plt.savefig('spectrum_wz.png')
     plt.show()
 
     plt.title("Cooperative Perception Message Throughput")
     plt.ylabel("Throughput (MB/s)")
     plt.xlabel("Vehicle Speed (mph)")
-    plt.plot(speed_range, sim4_MBps)
+    plot_scenario(speed_range, sim4_MBps, sim4_MBps_max)
+    plt.legend()
+    plt.savefig('spectrum_cp.png')
     plt.show()
 
     plt.title("City Intersections Message Throughput")
     plt.ylabel("Throughput (MB/s)")
     plt.xlabel("Intersection spacing (m)")
-    plt.plot(intersection_spacing_range, sim3_MBps)
+    plot_scenario(intersection_spacing_range, sim3_MBps, sim3_MBps_max)
+    plt.legend()
+    plt.savefig('spectrum_int.png')
     plt.show()
 
     plt.title("City Intersections Cooperative Perception Message Throughput")
     plt.ylabel("Throughput (MB/s)")
     plt.xlabel("Intersection spacing (m)")
-    colors = ['y', 'orange', 'r', 'k']
-    for i, city_radio_range in enumerate(city_radio_range_range):
-        plt.plot(intersection_spacing_range, sim5_MBps[i], color=colors[i], label=f'range: {city_radio_range} m')
+    plot_scenario(intersection_spacing_range, sim5_MBps, sim5_MBps_max)
     plt.legend()
+    plt.savefig('spectrum_int_cp.png')
     plt.show()
+
+    # plt.title("City Intersections Cooperative Perception Message Throughput")
+    # plt.ylabel("Throughput (MB/s)")
+    # plt.xlabel("Intersection spacing (m)")
+    # colors = ['y', 'orange', 'r', 'k']
+    # for i, city_radio_range in enumerate(city_radio_range_range):
+    #     plt.plot(intersection_spacing_range, sim5_MBps[i], color=colors[i], label=f'range: {city_radio_range} m')
+    # plt.legend()
+    # plt.show()
     # plt.savefig('foo.png')
 
     print('done')
