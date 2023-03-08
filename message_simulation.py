@@ -270,17 +270,17 @@ def main():
     # locs1 = np.array([750, 1000, 1250, 1500])
     # locs2 = np.array([250, 500, 750, 1000, 1250])
     # locs4 = np.array([500, 600, 700, 800, 900, 1000, 1250])
-    # locs3 = np.array([100, 200, 300, 400, 500, 600, 700])
-    # locs5 = np.array([100, 200, 300, 400, 500, 600, 700])
+    # locs3 = np.array([100, 150, 200, 500, 1000])
+    # locs5 = np.array([100, 150, 200, 500, 1000])
     # plot_scenario_with_veh_count(speed_range, sim1_data, sim1_max_data, "Platooning Message Throughput (range 800 m)",
     #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs1, save_name='spectrum_platooning_short.png')
     # plot_scenario_with_veh_count(speed_range, sim2_data, sim2_max_data, "Workzone Message Throughput (range 800 m)",
     #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs2, save_name='spectrum_wz_short.png')
     # plot_scenario_with_veh_count(speed_range, sim4_data, sim4_max_data, "Cooperative Perception Message Throughput (range 800 m)",
     #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs4, save_name='spectrum_cp_short.png')
-    # plot_scenario_with_veh_count(speed_range, sim3_data, sim3_max_data, "City Intersections Message Throughput (range 230 m)",
+    # plot_scenario_with_veh_count(intersection_spacing_range, sim3_data, sim3_max_data, "City Intersections Message Throughput (range 230 m)",
     #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs3, save_name='spectrum_int_short.png')
-    # plot_scenario_with_veh_count(speed_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 230 m)",
+    # plot_scenario_with_veh_count(intersection_spacing_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 230 m)",
     #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs5, save_name='spectrum_int_cp_short.png')
 
     locs1 = np.array([1500, 2000, 2500, 3000])
