@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import AutoMinorLocator
+import matplotlib.ticker as ticker
 
 max_data_mcs11 = 8.44
 max_data_mcs7 = 5.0625
@@ -181,7 +181,7 @@ def plot_scenario(x, y, y_max):
     plt.plot(x, [max_data_mcs7]*len(y), color='grey', linestyle='dotted', label='MCS7 Maximum')
 
 
-def plot_scenario_with_veh_count(speed, sim_Bps, sim_max_Bps, title, x1_label, x2_label, ylabel, save_name=None):
+def plot_scenario_with_veh_count(speed, sim_Bps, sim_max_Bps, title, x1_label, x2_label, ylabel, locs, save_name=None):
     MBps = sim_Bps[1:-1, 0] / 1000000
     safety_MBps = sim_Bps[1:-1, 1] / 1000000
     max_MBps = sim_max_Bps[1:-1, 0] / 1000000
@@ -205,8 +205,12 @@ def plot_scenario_with_veh_count(speed, sim_Bps, sim_max_Bps, title, x1_label, x
     def inverse(x):
         return np.interp(x, np.flip(num_vehicles), np.flip(speed))
 
-    ax2 = ax1.secondary_xaxis('top', functions=(forward, inverse), )
-    ax2.xaxis.set_minor_locator(AutoMinorLocator())
+    ax2 = ax1.secondary_xaxis('top', functions=(forward, inverse))
+    # ax2.set_xscale("log")
+    # ax2.xaxis.set_minor_locator(ticker.AutoMinorLocator())
+    ax2.xaxis.set_minor_locator(ticker.FixedLocator(locs))
+    ax2.xaxis.set_major_locator(ticker.NullLocator())
+    ax2.xaxis.set_minor_formatter(ticker.ScalarFormatter())
     ax2.set_xlabel(x2_label)
     plt.legend()
     if save_name is not None:
@@ -263,27 +267,37 @@ def main():
         sim5_data[i] = simulation_combined(*sim_args_city, **messages_normal)
         sim5_max_data[i] = simulation_combined(*sim_args_city, **messages_max)
 
+    # locs1 = np.array([750, 1000, 1250, 1500])
+    # locs2 = np.array([250, 500, 750, 1000, 1250])
+    # locs4 = np.array([500, 600, 700, 800, 900, 1000, 1250])
+    # locs3 = np.array([100, 200, 300, 400, 500, 600, 700])
+    # locs5 = np.array([100, 200, 300, 400, 500, 600, 700])
     # plot_scenario_with_veh_count(speed_range, sim1_data, sim1_max_data, "Platooning Message Throughput (range 800 m)",
-    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_platooning_short.png')
+    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs1, save_name='spectrum_platooning_short.png')
     # plot_scenario_with_veh_count(speed_range, sim2_data, sim2_max_data, "Workzone Message Throughput (range 800 m)",
-    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_wz_short.png')
+    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs2, save_name='spectrum_wz_short.png')
     # plot_scenario_with_veh_count(speed_range, sim4_data, sim4_max_data, "Cooperative Perception Message Throughput (range 800 m)",
-    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_cp_short.png')
+    #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs4, save_name='spectrum_cp_short.png')
     # plot_scenario_with_veh_count(speed_range, sim3_data, sim3_max_data, "City Intersections Message Throughput (range 230 m)",
-    #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_int_short.png')
+    #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs3, save_name='spectrum_int_short.png')
     # plot_scenario_with_veh_count(speed_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 230 m)",
-    #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_int_cp_short.png')
+    #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs5, save_name='spectrum_int_cp_short.png')
 
+    locs1 = np.array([1500, 2000, 2500, 3000])
+    locs2 = np.array([800, 1000, 1250, 1500, 2000])
+    locs4 = np.array([1000, 1250, 1500, 2000, 3000])
+    locs3 = np.array([300, 400, 500, 750, 1000, 2000])
+    locs5 = np.array([300, 400, 500, 750, 1000, 2000])
     plot_scenario_with_veh_count(speed_range, sim1_data, sim1_max_data, "Platooning Message Throughput (range 1600 m)",
-                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_platooning_long.png')
+                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs1, save_name='spectrum_platooning_long.png')
     plot_scenario_with_veh_count(speed_range, sim2_data, sim2_max_data, "Workzone Message Throughput (range 1600 m)",
-                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_wz_long.png')
+                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs2, save_name='spectrum_wz_long.png')
     plot_scenario_with_veh_count(speed_range, sim4_data, sim4_max_data, "Cooperative Perception Message Throughput (range 1600 m)",
-                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_cp_long.png')
-    plot_scenario_with_veh_count(speed_range, sim3_data, sim3_max_data, "City Intersections Message Throughput (range 400 m)",
-                                 "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_int_long.png')
-    plot_scenario_with_veh_count(speed_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 400 m)",
-                                 "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", save_name='spectrum_int_cp_long.png')
+                                 "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs4, save_name='spectrum_cp_long.png')
+    plot_scenario_with_veh_count(intersection_spacing_range, sim3_data, sim3_max_data, "City Intersections Message Throughput (range 400 m)",
+                                 "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs3, save_name='spectrum_int_long.png')
+    plot_scenario_with_veh_count(intersection_spacing_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 400 m)",
+                                 "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs5, save_name='spectrum_int_cp_long.png')
 
     print('done')
 
