@@ -65,6 +65,23 @@ def simulation_platooning(speed, inter_platoon_headway, intra_platoon_headway, n
     return total_Bps, safety_Bps, num_vehicles
 
 
+# platooning/wz sim, but max throughput always. number of vehicles is then fixed, speed on x and rsu range on y?
+def simulation_platooning_reversed(speed, inter_platoon_headway, intra_platoon_headway, num_lanes, radio_range, platoon_size=10,
+                          tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
+                          psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
+    veh_per_m = vehicles_per_m_platooning(speed, inter_platoon_headway, intra_platoon_headway)
+    Bps_per_leader = bsm_Bps + mpat_Bps + mom_Bps + tcr_Bps
+    Bps_per_follower = bsm_Bps + mpat_Bps + mom_Bps + tcr_Bps
+    Bps_per_leader_safety = bsm_Bps
+    Bps_per_follower_safety = bsm_Bps
+    Bps_per_veh = (Bps_per_follower * (platoon_size - 1) + Bps_per_leader) / platoon_size
+    Bps_per_veh_safety = (Bps_per_follower_safety * (platoon_size - 1) + Bps_per_leader_safety) / platoon_size
+    num_vehicles = veh_per_m * num_lanes * radio_range * 2
+    total_Bps = num_vehicles * Bps_per_veh
+    safety_Bps = num_vehicles * Bps_per_veh_safety
+    return total_Bps, safety_Bps, num_vehicles
+
+
 def simulation_workzone(speed, headway, num_lanes, radio_range,
                           tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
                           psm_Bps=psm_Bps, mom_Bps=mom_Bps, mpat_Bps=mpat_Bps, mreq_Bps=mreq_Bps, mresp_Bps=mresp_Bps):
@@ -77,6 +94,7 @@ def simulation_workzone(speed, headway, num_lanes, radio_range,
     return total_Bps, safety_Bps, num_vehicles
 
 
+# reverse these too. spacing on x, num lanes on y
 def simulation_intersections(speed, headway, num_lanes, radio_range, intersection_spacing, stopped_fill_prop=0.5, 
                              road_width=12, vehicle_len=8, cp=False, num_ped=0,
                           tcr_Bps=tcr_Bps, tcm_Bps=tcm_Bps, spat_Bps=spat_Bps, map_Bps=map_Bps, bsm_Bps=bsm_Bps,
@@ -211,6 +229,7 @@ def plot_scenario_with_veh_count(speed, sim_Bps, sim_max_Bps, title, x1_label, x
     ax2.xaxis.set_minor_locator(ticker.FixedLocator(locs))
     ax2.xaxis.set_major_locator(ticker.NullLocator())
     ax2.xaxis.set_minor_formatter(ticker.ScalarFormatter())
+    # ax2.set_xticklabels(ax2.xaxis.get_minorticklabels(), rotation=45)
     ax2.set_xlabel(x2_label)
     plt.legend()
     if save_name is not None:
@@ -267,11 +286,16 @@ def main():
         sim5_data[i] = simulation_combined(*sim_args_city, **messages_normal)
         sim5_max_data[i] = simulation_combined(*sim_args_city, **messages_max)
 
-    # locs1 = np.array([750, 1000, 1250, 1500])
-    # locs2 = np.array([250, 500, 750, 1000, 1250])
-    # locs4 = np.array([500, 600, 700, 800, 900, 1000, 1250])
-    # locs3 = np.array([100, 150, 200, 500, 1000])
-    # locs5 = np.array([100, 150, 200, 500, 1000])
+    # # locs1 = np.array([750, 1000, 1250, 1500])
+    # # locs2 = np.array([250, 500, 750, 1000, 1250])
+    # # locs4 = np.array([500, 600, 700, 800, 900, 1000, 1250])
+    # # locs3 = np.array([100, 150, 200, 500, 1000])
+    # # locs5 = np.array([100, 150, 200, 500, 1000])
+    # locs1 = np.round(sim1_data[:, 2])
+    # locs2 = np.round(sim2_data[:, 2])
+    # locs4 = np.round(sim4_data[1:-1, 2])
+    # locs3 = np.hstack((np.round(sim3_data[0, 2]), np.round(sim3_data[2:-1, 2])))
+    # locs5 = np.hstack((np.round(sim5_data[0, 2]), np.round(sim5_data[2:-1, 2])))
     # plot_scenario_with_veh_count(speed_range, sim1_data, sim1_max_data, "Platooning Message Throughput (range 800 m)",
     #                              "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs1, save_name='spectrum_platooning_short.png')
     # plot_scenario_with_veh_count(speed_range, sim2_data, sim2_max_data, "Workzone Message Throughput (range 800 m)",
@@ -283,11 +307,16 @@ def main():
     # plot_scenario_with_veh_count(intersection_spacing_range, sim5_data, sim5_max_data, "City Intersections CP Message Throughput (range 230 m)",
     #                              "Intersection spacing (m)", "Number of vehicles", "Throughput (MB/s)", locs5, save_name='spectrum_int_cp_short.png')
 
-    locs1 = np.array([1500, 2000, 2500, 3000])
-    locs2 = np.array([800, 1000, 1250, 1500, 2000])
-    locs4 = np.array([1000, 1250, 1500, 2000, 3000])
-    locs3 = np.array([300, 400, 500, 750, 1000, 2000])
-    locs5 = np.array([300, 400, 500, 750, 1000, 2000])
+    # locs1 = np.array([1500, 2000, 2500, 3000])
+    # locs2 = np.array([800, 1000, 1250, 1500, 2000])
+    # locs4 = np.array([1000, 1250, 1500, 2000, 3000])
+    # locs3 = np.array([300, 400, 500, 750, 1000, 2000])
+    # locs5 = np.array([300, 400, 500, 750, 1000, 2000])
+    locs1 = np.round(sim1_data[1:-1, 2])
+    locs2 = np.round(sim2_data[1:-1, 2])
+    locs4 = np.round(sim4_data[1:-1, 2])
+    locs3 = np.hstack((np.round(sim3_data[0, 2]), np.round(sim3_data[2:-1, 2])))
+    locs5 = np.hstack((np.round(sim5_data[0, 2]), np.round(sim5_data[2:-1, 2])))
     plot_scenario_with_veh_count(speed_range, sim1_data, sim1_max_data, "Platooning Message Throughput (range 1600 m)",
                                  "Vehicle Speed (mph)", "Number of vehicles", "Throughput (MB/s)", locs1, save_name='spectrum_platooning_long.png')
     plot_scenario_with_veh_count(speed_range, sim2_data, sim2_max_data, "Workzone Message Throughput (range 1600 m)",
